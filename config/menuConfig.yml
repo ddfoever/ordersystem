@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: menuService
+  datasource:
+    url: jdbc:mysql://localhost:3306/orderSystem?useUnicode=ture&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver #用于mysql connector 为6.0以上,若使用com.mysql.jdbc.Driver  6.0以下就会报错
 eureka:
   client:
     service-url:
