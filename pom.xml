@@ -13,6 +13,7 @@
         <module>config-server</module>
         <module>order-service</module>
         <module>menu-server</module>
+        <module>consumer-client</module>
     </modules>
     <!--spring boot dependency base on 2.0.7 RELEASE-->
     <parent>
