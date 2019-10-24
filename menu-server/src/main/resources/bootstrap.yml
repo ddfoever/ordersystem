@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: configserver
+      label: master
+      name: menuConfig
+      fail-fast: true #能够快速相应config server的失败

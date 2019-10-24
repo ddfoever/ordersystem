@@ -9,16 +9,20 @@
  
  
 + 根据业务拆分服务
+
 account 提供账户服务：管理员和用户的登录和退出
+
 menu 菜单服务 添加菜品，删除菜品，修改菜品 查询菜品
+
 order 订单服务 添加订单，查询订单 删除订单，处理订单；
+
 user 用户服务 添加用户，查询用户，删除用户
 
 分离一个服务消费来调用这四个微服务 ，服务消费者包含客户端和后台接口、后台管理系统页面和后台接口，通过Feign来实现负载均衡。
 
 所以有四个服务提供者和一个服务消费者在注册中心进行注册，并且通过配置中心来对配置文件进行管理；
-一共七个服务 
 
+一共七个服务 
 
 ### 开始搭建微服务工程环境
 1. 搭建父工程环境 为各个微服务
@@ -108,6 +112,90 @@ eureka:
     fetch-registry: false #if synchronzied data from other eureka server 
 ```
 ### 搭建config server 中心
+`pom.xml`
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+    </dependencies>
+```
+`application.yml`
+```yaml
+server:
+  port: 8762
+spring:
+  application:
+    name: configserver
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/ddfoever/ordersystem.git
+          search-paths: config
+          password: ****
+          username: ****
+          default-label: master
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+```
+### 配置order 服务
+
+`pom.xml`
+```xml
+ <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>2.0.2.RELEASE</version>
+        </dependency>
+    </dependencies>
+```
+
+`bootstrap.yml`
+```yaml
+spring:
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: configserver
+      label: master
+      name: orderConfig
+      fail-fast: true #能够快速相应config server的失败
+```
+
+test
+`TestController.java`
+
+```java
+    @RestController
+    @RequestMapping("/test")
+    public class TestController {
+        @Value("${server.port}")
+        private String port;
+        @GetMapping("/port")
+        public String getPort(){
+            return "当前的端口号："+this.port;
+        }
+    }
+```
 
 
- 
+
